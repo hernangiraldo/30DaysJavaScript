@@ -1,33 +1,19 @@
-window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.interimResults = true;
-// recognition.lang = 'en-EN';
-
-let p;
-let words;
+let arrow;
+let speed;
 
 function domLoaded() {
-  p = document.createElement('p');
-  words = document.querySelector('.words');
-  words.appendChild(p);
-}
+  arrow = document.querySelector('.arrow');
+  speed = document.querySelector('.speed-value');
 
-recognition.addEventListener('result', e => {
-  const transcript = Array.from(e.results)
-    .map( result => result[0])
-    .map(result => result.transcript)
-    .join('');
-
-    p.textContent = transcript;
-
-    if (e.results[0].isFinal) {
-      p = document.createElement('p');
-      words.appendChild(p);
+  navigator.geolocation.watchPosition( 
+    data => {
+      speed.textContent = data.coords.speed;
+      arrow.style.transform = `rotate(${data.coords.heading}deg)`;
+    },
+    err => {
+      console.log(err);
     }
-});
-
-recognition.addEventListener('end', recognition.start);
-
-recognition.start();
+  );
+}
 
 document.addEventListener('DOMContentLoaded', domLoaded);
